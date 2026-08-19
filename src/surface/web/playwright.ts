@@ -114,7 +114,12 @@ export class WebPlaywrightDriver implements SurfaceDriver {
     let last: LocatorError = new LocatorError("locator_miss", `unresolved: ${target.description}`);
     for (const loc of target.locators) {
       try {
-        const frame = frameByChain(this.page.mainFrame(), this.page.frames(), loc.frame);
+        let frame: import("playwright").Frame;
+        try {
+          frame = frameByChain(this.page.mainFrame(), this.page.frames(), loc.frame);
+        } catch {
+          frame = this.page.mainFrame();
+        }
         const found = await firstUnique(toPlaywrightLocator(frame, loc), loc.nth);
         const recorded = await recordFromElement(found, loc.frame);
         return { handle: found, recorded };
@@ -139,7 +144,7 @@ export class WebPlaywrightDriver implements SurfaceDriver {
         return recorded;
       }
     }
-    throw new LocatorError("locator_miss", "no dismiss button (OK/Close/Continue) on page");
+    return [];
   }
 
   private async settle(): Promise<void> {

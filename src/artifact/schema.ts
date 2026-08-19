@@ -331,6 +331,7 @@ export const CapabilitySchema = z
         "wait_for",
         "assert_checkpoint",
         "human_step",
+        "dismiss_dialog",
       ].includes(step.action);
       if (needsTarget && !step.target) {
         ctx.addIssue({
