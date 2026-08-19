@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head><title>Confirm {{openLabel}}</title></head>
+<body bgcolor="{{bg}}" text="#000000">
+  <table width="100%" border="0" cellpadding="6" cellspacing="0" bgcolor="{{primary}}">
+    <tr>
+      <td><font face="Tahoma, Arial, sans-serif" color="#ffffff" size="3"><b>Confirmation required</b></font></td>
+    </tr>
+  </table>
+  <br>
+  <table width="560" border="1" cellpadding="8" cellspacing="0" bgcolor="#ffffff" align="center" bordercolor="#808080">
+    <tr bgcolor="#ece9d8">
+      <td colspan="2"><font face="Tahoma, Arial, sans-serif" size="2"><b>Review before posting</b></font></td>
+    </tr>
+    <tr>
+      <td width="220"><font face="Tahoma, Arial, sans-serif" size="2">{{memberIdLabel}}</font></td>
+      <td><font face="Tahoma, Arial, sans-serif" size="2">{{memberId}}</font></td>
+    </tr>
+    <tr>
+      <td><font face="Tahoma, Arial, sans-serif" size="2">{{memberNameLabel}}</font></td>
+      <td><font face="Tahoma, Arial, sans-serif" size="2">{{memberName}}</font></td>
+    </tr>
+    <tr>
+      <td><font face="Tahoma, Arial, sans-serif" size="2">{{productTypeLabel}}</font></td>
+      <td><font face="Tahoma, Arial, sans-serif" size="2">{{productType}}</font></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <font face="Tahoma, Arial, sans-serif" size="2" color="#990000">
+          This action posts a new product to the core. It is not reversible from this workstation.
+        </font>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <form method="POST" action="{{action}}" style="display:inline">
+          <input type="hidden" name="mid" value="{{memberId}}">
+          <input type="hidden" name="ptype" value="savings">
+          <input type="submit" value="{{confirmLabel}}">
+        </form>
+        &nbsp;
+        <font face="Tahoma, Arial, sans-serif" size="2"><a href="{{cancelHref}}" title="Cancel">Cancel</a></font>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

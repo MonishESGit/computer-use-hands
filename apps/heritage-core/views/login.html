@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>{{institution}} — Teller Sign-On</title>
+</head>
+<body bgcolor="{{bg}}" text="#000000" link="{{primary}}" vlink="{{primary}}">
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="{{primary}}">
+    <tr>
+      <td>
+        <table width="100%" border="0" cellpadding="8" cellspacing="0">
+          <tr>
+            <td>
+              <font face="Tahoma, Arial, sans-serif" color="#ffffff" size="5"><b>{{institution}}</b></font><br>
+              <font face="Tahoma, Arial, sans-serif" color="{{accent}}" size="2">HERITAGE CORE &nbsp;|&nbsp; Teller Workstation v4.2</font>
+            </td>
+            <td align="right" valign="bottom">
+              <font face="Tahoma, Arial, sans-serif" color="#ffffff" size="1">Internal use only</font>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  <br>
+  <table width="420" border="1" cellpadding="0" cellspacing="0" bgcolor="#ffffff" align="center" bordercolor="#808080">
+    <tr>
+      <td>
+        <table width="100%" border="0" cellpadding="4" cellspacing="0" bgcolor="{{primary}}">
+          <tr>
+            <td><font face="Tahoma, Arial, sans-serif" color="#ffffff" size="2"><b>Teller Sign-On</b></font></td>
+          </tr>
+        </table>
+        <form method="POST" action="{{action}}" autocomplete="off">
+          <table width="100%" border="0" cellpadding="8" cellspacing="0">
+            <tr>
+              <td colspan="2">
+                <font face="Tahoma, Arial, sans-serif" size="2" color="#990000"><b>{{error}}</b></font>
+              </td>
+            </tr>
+            <tr>
+              <td width="140"><font face="Tahoma, Arial, sans-serif" size="2">User ID</font></td>
+              <td><input type="text" name="uid" title="User ID" size="24"></td>
+            </tr>
+            <tr>
+              <td><font face="Tahoma, Arial, sans-serif" size="2">Password</font></td>
+              <td><input type="password" name="pwd" title="Password" size="24"></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <input type="submit" value="Sign On">
+                &nbsp;
+                <font face="Tahoma, Arial, sans-serif" size="1" color="#666666">Authorized staff only</font>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+    </tr>
+  </table>
+  <p align="center">
+    <font face="Tahoma, Arial, sans-serif" size="1" color="#666666">
+      Heritage Core &copy; 2004&ndash;2011 NCR-style vendor sample. Not a real financial institution.
+    </font>
+  </p>
+</body>
+</html>
