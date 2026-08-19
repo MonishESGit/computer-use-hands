@@ -1,0 +1,27 @@
+{
+  "name": "hands",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Record LLM computer-use once; replay a typed capability without the model in the loop.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "hands": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "heritage": "tsx apps/heritage-core/server.ts",
+    "hands": "tsx src/cli.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.2"
+  }
+}
