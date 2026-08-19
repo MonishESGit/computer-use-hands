@@ -1,0 +1,30 @@
+# Dependencies and build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+*.pem
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Test and Playwright artifacts (committed evidence lives under evidence/)
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+coverage/
+
+# Runtime scratch (structured demo runs are committed under evidence/runs/)
+.hands-cache/
+tmp/
+*.log
+
+.cursor/
