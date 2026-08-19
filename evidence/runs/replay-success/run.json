@@ -1,0 +1,13 @@
+{
+  "finishedAt": "2026-08-19T19:41:26.489Z",
+  "result": {
+    "status": "success",
+    "runId": "run_2fef1ea0-4d9e-4cd5-9702-401490340f61",
+    "durationMs": 16520,
+    "stepsCompleted": 7,
+    "outputs": {
+      "memberName": "Alicia Nguyen",
+      "savingsBalance": 4250.18
+    }
+  }
+}

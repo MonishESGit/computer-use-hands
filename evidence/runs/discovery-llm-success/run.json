@@ -1,0 +1,11 @@
+{
+  "finishedAt": "2026-08-19T19:45:41.201Z",
+  "result": {
+    "status": "success",
+    "runId": "run_0d9d0232-639c-4e30-ab02-74a69e99b7c5",
+    "kind": "discovery",
+    "model": "gpt-4o",
+    "reason": "CIF record with savings balance is displayed.",
+    "evidenceDir": "evidence/runs/discovery-llm-success"
+  }
+}
