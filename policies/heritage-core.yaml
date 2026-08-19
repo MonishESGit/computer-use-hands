@@ -1,7 +1,7 @@
 allow:
   origins:
-    - "http://127.0.0.1:3401"
-    - "http://localhost:3401"
+    - "http://127.0.0.1:*"
+    - "http://localhost:*"
   pathPrefixes:
     - "/t/first-federal"
     - "/t/riverside"

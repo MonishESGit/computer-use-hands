@@ -41,7 +41,14 @@ export function originAllowed(policy: Policy, url: string): PolicyDecision {
     return { ok: false, code: "policy_violation", reason: `unparseable URL: ${url}` };
   }
   const origin = parsed.origin;
-  if (!policy.allow.origins.includes(origin)) {
+  const host = `${parsed.protocol}//${parsed.hostname}`;
+  const originOk = policy.allow.origins.some((allowed) => {
+    if (allowed.endsWith(":*")) {
+      return host === allowed.slice(0, -2);
+    }
+    return allowed === origin;
+  });
+  if (!originOk) {
     return { ok: false, code: "policy_violation", reason: `origin ${origin} is not allowlisted` };
   }
   if (policy.deny.urlPatterns.some((pattern) => globMatch(pattern, parsed.pathname))) {
