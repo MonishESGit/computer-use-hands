@@ -1,18 +1,238 @@
 #!/usr/bin/env node
 
-function usage(): void {
-  process.stdout.write(
-    [
-      "hands — computer-use runtime",
-      "",
-      "Commands will be added as the runtime lands:",
-      "  discover   LLM-driven run → capability artifact",
-      "  replay     deterministic execution of a saved artifact",
-      "  invoke     call a catalogued capability by name",
-      "",
-    ].join("\n"),
-  );
+import path from "node:path";
+import { loadCapabilityFile, writeCapabilityFile } from "./artifact/io.js";
+import { discover } from "./agent/loop.js";
+import { OpenAiClient } from "./agent/openai.js";
+import { ScriptedClient, heritageLookupScript } from "./agent/scripted.js";
+import { startCatalogApi } from "./catalog/api.js";
+import { approveCapability, getCapability, listCapabilities, toolDefinition } from "./catalog/store.js";
+import { writePlaywrightSpec } from "./codegen/playwrightSpec.js";
+import { RunLog } from "./evidence/run.js";
+import { loadPolicyFile } from "./policy/load.js";
+import { replay } from "./replay/engine.js";
+import { defaultPolicyPath, loadDotEnv, tellerSecrets } from "./runtime/env.js";
+import { LiveSession } from "./session/live.js";
+
+loadDotEnv();
+
+async function main(argv: string[]): Promise<void> {
+  const [cmd, ...rest] = argv;
+  switch (cmd) {
+    case "discover":
+      await cmdDiscover(parseArgs(rest));
+      return;
+    case "replay":
+      await cmdReplay(parseArgs(rest));
+      return;
+    case "invoke":
+      await cmdInvoke(rest);
+      return;
+    case "catalog":
+      cmdCatalog();
+      return;
+    case "approve":
+      cmdApprove(rest[0]);
+      return;
+    case "codegen":
+      cmdCodegen(parseArgs(rest));
+      return;
+    case "stability":
+      await cmdStability(parseArgs(rest));
+      return;
+    case "serve":
+      await cmdServe();
+      return;
+    default:
+      usage();
+  }
 }
 
-usage();
-process.exit(0);
+function usage(): void {
+  process.stdout.write(`hands — computer-use runtime
+
+  hands discover --goal "..." --tenant first-federal [--headed] [--scripted]
+  hands replay --capability capabilities/lookup_member_savings_balance.json --param tenant=first-federal --param memberId=12345
+  hands invoke lookup_member_savings_balance --memberId=12345 --tenant=riverside
+  hands catalog
+  hands approve lookup_member_savings_balance
+  hands codegen --capability capabilities/lookup_member_savings_balance.json --out tests/generated
+  hands stability --capability capabilities/lookup_member_savings_balance.json --n 3
+  hands serve
+`);
+}
+
+function parseArgs(rest: string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  const params: string[] = [];
+  for (let i = 0; i < rest.length; i += 1) {
+    const token = rest[i];
+    if (!token) continue;
+    if (!token.startsWith("--")) continue;
+    const key = token.slice(2);
+    if (key === "headed" || key === "scripted") {
+      out[key] = "true";
+      continue;
+    }
+    const next = rest[i + 1];
+    if (key === "param" && next) {
+      params.push(next);
+      i += 1;
+      continue;
+    }
+    if (next && !next.startsWith("--")) {
+      out[key] = next;
+      i += 1;
+    } else {
+      out[key] = "true";
+    }
+  }
+  out.params = params.join(",");
+  return out;
+}
+
+function kvParams(raw: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (!raw) return out;
+  for (const part of raw.split(",")) {
+    const eq = part.indexOf("=");
+    if (eq > 0) out[part.slice(0, eq)] = part.slice(eq + 1);
+  }
+  return out;
+}
+
+async function cmdDiscover(args: Record<string, string>): Promise<void> {
+  const tenant = args.tenant ?? "first-federal";
+  const port = Number(process.env.HC_PORT ?? 3401);
+  const goal =
+    args.goal ??
+    "Log in as the teller and look up member 12345. Read the current savings balance.";
+  const entryUrl = `http://127.0.0.1:${port}/t/${tenant}/login`;
+  const policy = loadPolicyFile(defaultPolicyPath());
+  const evidence = new RunLog({ policy });
+  const session = await LiveSession.launch({ headed: args.headed === "true" });
+  const llm =
+    args.scripted === "true" || !process.env.OPENAI_API_KEY
+      ? new ScriptedClient(heritageLookupScript(`http://127.0.0.1:${port}/t/${tenant}`, "12345"))
+      : new OpenAiClient(process.env.OPENAI_API_KEY);
+  try {
+    const result = await discover({
+      goal,
+      entryUrl,
+      tenant,
+      session,
+      llm,
+      policy,
+      evidence,
+      secrets: tellerSecrets(),
+    });
+    process.stdout.write(`${JSON.stringify({ status: result.status, reason: result.reason, run: evidence.dir }, null, 2)}\n`);
+    if (result.capability) {
+      const file = path.join("capabilities", `${result.capability.metadata.name}.discovered.json`);
+      writeCapabilityFile(file, result.capability);
+      process.stdout.write(`wrote ${file}\n`);
+    }
+  } finally {
+    await session.dispose();
+  }
+}
+
+async function cmdReplay(args: Record<string, string>): Promise<void> {
+  if (!args.capability) {
+    throw new Error("--capability is required");
+  }
+  const capability = loadCapabilityFile(args.capability);
+  const policy = loadPolicyFile(defaultPolicyPath());
+  const params = kvParams(args.params ?? "");
+  const evidence = new RunLog({ policy });
+  const session = await LiveSession.launch({ headed: args.headed === "true" });
+  try {
+    const result = await replay({
+      capability,
+      params,
+      secrets: tellerSecrets(),
+      policy,
+      session,
+      evidence,
+    });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } finally {
+    await session.dispose();
+  }
+}
+
+async function cmdInvoke(rest: string[]): Promise<void> {
+  const name = rest[0];
+  if (!name) throw new Error("capability name required");
+  const args: Record<string, string> = {};
+  for (const token of rest.slice(1)) {
+    const t = token.replace(/^--/, "");
+    const eq = t.indexOf("=");
+    if (eq > 0) args[t.slice(0, eq)] = t.slice(eq + 1);
+  }
+  await cmdReplay({
+    capability: path.join("capabilities", `${name}.json`),
+    params: Object.entries(args)
+      .map(([k, v]) => `${k}=${v}`)
+      .join(","),
+  });
+}
+
+function cmdCatalog(): void {
+  const items = listCapabilities().map((cap) => ({
+    name: cap.metadata.name,
+    status: cap.metadata.status,
+    tool: toolDefinition(cap),
+  }));
+  process.stdout.write(`${JSON.stringify(items, null, 2)}\n`);
+}
+
+function cmdApprove(name: string | undefined): void {
+  if (!name) throw new Error("capability name required");
+  const cap = approveCapability(name.replace(/\.json$/, ""));
+  process.stdout.write(`approved ${cap.metadata.name}\n`);
+}
+
+function cmdCodegen(args: Record<string, string>): Promise<void> | void {
+  if (!args.capability) throw new Error("--capability is required");
+  const cap = loadCapabilityFile(args.capability);
+  const file = writePlaywrightSpec(cap, args.out ?? "tests/generated");
+  process.stdout.write(`wrote ${file}\n`);
+}
+
+async function cmdStability(args: Record<string, string>): Promise<void> {
+  const n = Number(args.n ?? 3);
+  for (let i = 0; i < n; i += 1) {
+    await cmdReplay(args);
+  }
+  process.stdout.write(`stability ran ${n} replay(s)\n`);
+}
+
+async function cmdServe(): Promise<void> {
+  const api = await startCatalogApi({
+    invoke: async (name, args) => {
+      const cap = getCapability(name);
+      const policy = loadPolicyFile(defaultPolicyPath());
+      const evidence = new RunLog({ policy });
+      const session = await LiveSession.launch();
+      try {
+        return await replay({
+          capability: cap,
+          params: args,
+          secrets: tellerSecrets(),
+          policy,
+          session,
+          evidence,
+        });
+      } finally {
+        await session.dispose();
+      }
+    },
+  });
+  process.stdout.write(`catalog API ${api.url}\nGET /capabilities\nPOST /capabilities/:name/invoke\n`);
+}
+
+main(process.argv.slice(2)).catch((err: unknown) => {
+  process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`);
+  process.exit(1);
+});

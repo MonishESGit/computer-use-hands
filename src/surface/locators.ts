@@ -4,16 +4,14 @@ import { canonicalizeLocatorName, matchesAccessibleName } from "../artifact/cano
 import { LocatorError } from "./types.js";
 
 export function frameByChain(root: Frame, pageFrames: Frame[], chain: string[] | undefined): Frame {
-  if (!chain || chain.length === 0) {
-    return root;
-  }
+  const names = (chain ?? []).filter((name) => name && name !== "_top" && name !== "top");
   let current: Frame = root;
-  for (const name of chain) {
+  for (const name of names) {
     const named = pageFrames.find((frame) => frame.name() === name);
     const child = current.childFrames().find((frame) => frame.name() === name);
     const next = named ?? child;
     if (!next) {
-      throw new LocatorError("locator_miss", `frame ${chain.join(" / ")} not found`);
+      throw new LocatorError("locator_miss", `frame ${names.join(" / ")} not found`);
     }
     current = next;
   }
