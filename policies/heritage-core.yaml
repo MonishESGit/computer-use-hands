@@ -1,0 +1,44 @@
+allow:
+  origins:
+    - "http://127.0.0.1:3401"
+    - "http://localhost:3401"
+  pathPrefixes:
+    - "/t/first-federal"
+    - "/t/riverside"
+  actions:
+    - navigate
+    - click
+    - fill
+    - select
+    - press
+    - extract
+    - wait_for
+    - dismiss_dialog
+    - switch_frame
+    - assert_checkpoint
+    - human_step
+deny:
+  urlPatterns:
+    - "*/admin/purge*"
+    - "*/wire*"
+risk:
+  irreversibleNameMatches:
+    - "Post Share"
+    - "Confirm Opening"
+    - "Confirm"
+    - "Submit"
+  unattendedIrreversibleRequires: approved
+redact:
+  secretRefs:
+    - teller_user
+    - teller_password
+  fieldNames:
+    - password
+    - pwd
+    - cookie
+    - authorization
+    - ssn
+  patterns:
+    - name: password
+      regex: "(password|pwd)\\s*[=:]\\s*\\S+"
+      replace: "$1=[REDACTED]"
