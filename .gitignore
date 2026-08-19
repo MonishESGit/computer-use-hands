@@ -26,5 +26,6 @@ coverage/
 .hands-cache/
 tmp/
 *.log
+tests/generated/
 
 .cursor/
