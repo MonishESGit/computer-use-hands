@@ -1,0 +1,21 @@
+[
+  {
+    "id": "12345",
+    "name": "Alicia Nguyen",
+    "savingsBalance": 4250.18,
+    "canOpenProduct": true
+  },
+  {
+    "id": "67890",
+    "name": "Marcus Hale",
+    "savingsBalance": 890.0,
+    "canOpenProduct": false
+  },
+  {
+    "id": "00001",
+    "name": "Priya Shah",
+    "savingsBalance": 10200.0,
+    "canOpenProduct": true,
+    "slowInquiryMs": 2500
+  }
+]

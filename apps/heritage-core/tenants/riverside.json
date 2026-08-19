@@ -1,0 +1,21 @@
+{
+  "id": "riverside",
+  "name": "Riverside Community Bank",
+  "shortName": "Riverside",
+  "labels": {
+    "memberId": "Customer No.",
+    "memberName": "Customer Name",
+    "balance": "Current Savings",
+    "openProduct": "Open Sub-Account",
+    "confirm": "Confirm Opening",
+    "productType": "Product Type",
+    "receiptId": "New Sub-Account ID",
+    "inquiry": "Customer Inquiry",
+    "home": "Teller Home"
+  },
+  "theme": {
+    "primary": "#1b4332",
+    "accent": "#95d5b2",
+    "bg": "#d4d0c8"
+  }
+}

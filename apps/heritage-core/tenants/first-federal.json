@@ -1,0 +1,21 @@
+{
+  "id": "first-federal",
+  "name": "First Federal Credit Union",
+  "shortName": "First Federal",
+  "labels": {
+    "memberId": "Member Number",
+    "memberName": "Member Name",
+    "balance": "Share Balance",
+    "openProduct": "Open Auxiliary Share",
+    "confirm": "Post Share",
+    "productType": "Share Type",
+    "receiptId": "New Share ID",
+    "inquiry": "Member Inquiry",
+    "home": "Teller Home"
+  },
+  "theme": {
+    "primary": "#1a365d",
+    "accent": "#c4a35a",
+    "bg": "#d4d0c8"
+  }
+}
