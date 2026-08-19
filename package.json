@@ -19,9 +19,13 @@
     "hands": "tsx src/cli.ts"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/node": "^22.15.3",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
     "vitest": "^3.1.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
   }
 }
