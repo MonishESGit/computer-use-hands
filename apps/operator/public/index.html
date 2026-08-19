@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Hands operator</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: #0f1419; color: #e7ecf1; }
+    header { background: #1b2430; padding: 12px 20px; border-bottom: 1px solid #2c3a4a; }
+    main { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 52px); }
+    aside { padding: 16px; border-right: 1px solid #2c3a4a; }
+    section { padding: 16px; }
+    pre { white-space: pre-wrap; background: #11181f; padding: 8px; font-size: 12px; }
+    button { margin-right: 8px; padding: 8px 12px; cursor: pointer; }
+    img { max-width: 100%; border: 1px solid #2c3a4a; }
+    .reason { color: #f0c674; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Hands operator</strong> — same live session, not a new browser
+  </header>
+  <main>
+    <aside>
+      <p class="reason" id="reason">Loading…</p>
+      <p id="owner"></p>
+      <button id="resume">Resume automation</button>
+      <button id="abort">Abort</button>
+      <h3>Human actions</h3>
+      <pre id="log"></pre>
+      <h3>Observation</h3>
+      <pre id="obs"></pre>
+    </aside>
+    <section>
+      <img id="shot" alt="Current live session screenshot">
+    </section>
+  </main>
+  <script>
+    async function refresh() {
+      const state = await (await fetch("/state")).json();
+      document.getElementById("reason").textContent = state.intervention.reason;
+      document.getElementById("owner").textContent = "Control: " + state.owner;
+      document.getElementById("log").textContent = JSON.stringify(state.humanLog, null, 2);
+      document.getElementById("obs").textContent = state.observation.text;
+      document.getElementById("shot").src = "/screenshot?" + Date.now();
+    }
+    async function resume(decision) {
+      await fetch("/resume", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ decision }),
+      });
+      refresh();
+    }
+    document.getElementById("resume").onclick = () => resume("resume");
+    document.getElementById("abort").onclick = () => resume("abort");
+    refresh();
+    setInterval(refresh, 2000);
+  </script>
+</body>
+</html>
