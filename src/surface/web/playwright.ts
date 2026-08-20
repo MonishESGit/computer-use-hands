@@ -121,7 +121,9 @@ export class WebPlaywrightDriver implements SurfaceDriver {
           frame = this.page.mainFrame();
         }
         const found = await firstUnique(toPlaywrightLocator(frame, loc), loc.nth);
-        const recorded = await recordFromElement(found, loc.frame);
+        const actualFrame =
+          frame === this.page.mainFrame() || !frame.name() ? undefined : [frame.name()];
+        const recorded = await recordFromElement(found, actualFrame);
         return { handle: found, recorded };
       } catch (err) {
         if (err instanceof LocatorError) {

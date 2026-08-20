@@ -9,7 +9,7 @@ export function catalogDir(root = process.cwd()): string {
 
 export function listCapabilities(root = process.cwd()): Capability[] {
   return readdirSync(catalogDir(root))
-    .filter((name) => name.endsWith(".json"))
+    .filter((name) => name.endsWith(".json") && !name.endsWith(".discovered.json"))
     .map((name) => loadCapabilityFile(path.join(catalogDir(root), name)));
 }
 

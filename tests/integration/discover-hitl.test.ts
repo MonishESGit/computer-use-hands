@@ -59,6 +59,17 @@ describe("discovery loop (scripted LLM)", () => {
     expect(result.status).toBe("success");
     expect(result.capability?.metadata.status).toBe("draft");
     expect(result.capability?.spec.steps.some((s) => s.action === "fill")).toBe(true);
+    const signOn = result.capability?.spec.steps.find((step) =>
+      /sign on/i.test(step.target?.description ?? ""),
+    );
+    expect(signOn?.target?.locators[0]).toMatchObject({
+      strategy: "ax_role_name",
+      role: "button",
+      name: "Sign On",
+    });
+    const fills = result.capability?.spec.steps.filter((step) => step.action === "fill") ?? [];
+    const keys = fills.map((step) => `${step.target?.description}:${JSON.stringify(step.valueFrom)}`);
+    expect(keys).toEqual([...new Set(keys)]);
   }, 60_000);
 });
 
@@ -105,6 +116,7 @@ describe("human handoff", () => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ type: "fill", role: "textbox", name: "User ID", value: "teller" }),
     });
+    expect(session.humanLog.some((entry) => entry.detail.includes("User ID"))).toBe(true);
     await fetch(`${op.url}/resume`, {
       method: "POST",
       headers: { "content-type": "application/json" },

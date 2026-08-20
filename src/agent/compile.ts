@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { canonicalizeLocatorName } from "../artifact/canonicalize.js";
+import { polishCapability } from "../artifact/polish.js";
 import type { Capability, Locator, Step } from "../artifact/schema.js";
 import { parseCapability } from "../artifact/io.js";
 import type { ActionIntent } from "../surface/types.js";
@@ -49,7 +50,10 @@ const DEFAULT_HANDLERS = [
   {
     id: "h_expired",
     when: { match: "session_expired" as const },
-    then: { kind: "fail" as const, code: "SESSION_EXPIRED" },
+    then: {
+      kind: "escalate" as const,
+      reason: "Teller session expired; a human must re-authenticate on this live session.",
+    },
   },
 ];
 
@@ -187,7 +191,7 @@ export function compileCapability(options: {
       exceptionHandlers: DEFAULT_HANDLERS,
     },
   };
-  return parseCapability(draft);
+  return polishCapability(parseCapability(draft));
 }
 
 function intentLocators(turn: RecordedTurn): Locator[] {

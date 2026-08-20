@@ -1,0 +1,11 @@
+{
+  "finishedAt": "2026-08-20T17:56:45.361Z",
+  "result": {
+    "status": "business_outcome",
+    "runId": "run_a30061c9-f6d9-4712-8a41-980ecc84b400",
+    "durationMs": 14601,
+    "code": "PERMISSION_DENIED",
+    "message": "Teller is not authorized for this product action",
+    "evidenceDir": "evidence/runs/replay-permission-denied"
+  }
+}

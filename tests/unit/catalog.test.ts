@@ -7,6 +7,7 @@ describe("capability catalog", () => {
     const caps = listCapabilities();
     const lookup = caps.find((cap) => cap.metadata.name === "lookup_member_savings_balance");
     expect(lookup).toBeTruthy();
+    expect(caps.some((cap) => cap.metadata.name === "open_auxiliary_share")).toBe(true);
     const tool = toolDefinition(lookup!);
     expect(JSON.stringify(tool)).toContain("memberId");
   });
@@ -14,7 +15,10 @@ describe("capability catalog", () => {
 
 describe("codegen", () => {
   it("emits a review snippet from the artifact", () => {
-    const cap = listCapabilities()[0]!;
+    const cap = listCapabilities().find((item) => item.metadata.name === "lookup_member_savings_balance");
+    if (!cap) {
+      throw new Error("lookup capability missing from catalog");
+    }
     const spec = emitPlaywrightSpec(cap);
     expect(spec).toContain(cap.metadata.name);
     expect(spec).toContain("Hands replay is the executor");

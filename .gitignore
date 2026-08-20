@@ -27,5 +27,7 @@ coverage/
 tmp/
 *.log
 tests/generated/
+capabilities/*.discovered.json
+evidence/runs/run_*
 
 .cursor/

@@ -1,17 +1,17 @@
-{"at":"2026-08-19T19:41:09.968Z","kind":"replay_start","payload":{"capability":"lookup_member_savings_balance","params":{"tenant":"first-federal","memberId":"12345","port":3401}}}
-{"at":"2026-08-19T19:41:09.991Z","kind":"observe","payload":{"stepId":"s1","url":"about:blank","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:10.182Z","kind":"observe","payload":{"stepId":"s1","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:10.189Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:10.373Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:10.378Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:10.574Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:10.578Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:12.426Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":["unexpected_dialog"],"phase":"after"}}
-{"at":"2026-08-19T19:41:12.426Z","kind":"handler","payload":{"stepId":"s4","handlerId":"h_notice","match":"unexpected_dialog","phase":"after"}}
-{"at":"2026-08-19T19:41:14.237Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:16.056Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:17.681Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:19.473Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:21.093Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
-{"at":"2026-08-19T19:41:22.906Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
-{"at":"2026-08-19T19:41:26.488Z","kind":"replay_success","payload":{"outputs":{"memberName":"Alicia Nguyen","savingsBalance":4250.18}}}
+{"at":"2026-08-20T17:54:09.189Z","kind":"replay_start","payload":{"capability":"lookup_member_savings_balance","params":{"tenant":"first-federal","memberId":"12345","port":3401}}}
+{"at":"2026-08-20T17:54:09.215Z","kind":"observe","payload":{"stepId":"s1","url":"about:blank","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:09.405Z","kind":"observe","payload":{"stepId":"s1","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:09.411Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:09.596Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:09.601Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:09.788Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:09.794Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:11.635Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":["unexpected_dialog"],"phase":"after"}}
+{"at":"2026-08-20T17:54:11.635Z","kind":"handler","payload":{"stepId":"s4","handlerId":"h_notice","match":"unexpected_dialog","phase":"after"}}
+{"at":"2026-08-20T17:54:13.434Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:15.234Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:16.850Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:18.627Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:20.243Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:54:22.045Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:54:25.597Z","kind":"replay_success","payload":{"outputs":{"memberName":"Alicia Nguyen","savingsBalance":4250.18}}}

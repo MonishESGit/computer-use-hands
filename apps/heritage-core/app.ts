@@ -332,6 +332,7 @@ function openFormPage(tenant: TenantConfig, error: string): string {
 function messagePage(tenant: TenantConfig, title: string, body: string, again: "inquiry" | "open"): string {
   return render("host-message.html", {
     ...chrome(tenant),
+    inquiryLabel: escapeHtml(again === "open" ? tenant.labels.openProduct : tenant.labels.inquiry),
     bannerTitle: escapeHtml(title),
     bannerBody: escapeHtml(body),
     againHref: `/t/${tenant.id}/main/${again}`,

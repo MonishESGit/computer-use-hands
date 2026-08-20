@@ -78,7 +78,14 @@ export async function recordFromElement(el: PwLocator, frame: string[] | undefin
     };
   });
   const role = inferRole(info.tag, info.type);
-  const accName = info.accessible || info.title || info.text;
+  const frameChain = (frame ?? []).filter((name) => name && name !== "_top" && name !== "top");
+  const recordedFrame = frameChain.length > 0 ? frameChain : undefined;
+  // input type=submit has no innerText; the accessible name is the value.
+  const accName =
+    info.accessible ||
+    info.title ||
+    info.text ||
+    (role === "button" && info.value ? info.value : undefined);
   const recorded: Locator[] = [];
   if (role && accName) {
     recorded.push(
@@ -86,7 +93,7 @@ export async function recordFromElement(el: PwLocator, frame: string[] | undefin
         strategy: "ax_role_name",
         role,
         name: accName,
-        frame,
+        frame: recordedFrame,
         confidence: 0.95,
       }),
     );
@@ -97,7 +104,7 @@ export async function recordFromElement(el: PwLocator, frame: string[] | undefin
         strategy: "ax_role_name",
         role: role ?? "textbox",
         name: info.title,
-        frame,
+        frame: recordedFrame,
         confidence: 0.9,
       }),
     );
@@ -106,7 +113,7 @@ export async function recordFromElement(el: PwLocator, frame: string[] | undefin
     recorded.push({
       strategy: "visible_text",
       text: info.text,
-      frame,
+      frame: recordedFrame,
       confidence: 0.55,
     });
   }
@@ -114,7 +121,7 @@ export async function recordFromElement(el: PwLocator, frame: string[] | undefin
     recorded.push({
       strategy: "css",
       css: info.tag,
-      frame,
+      frame: recordedFrame,
       confidence: 0.2,
     });
   }
