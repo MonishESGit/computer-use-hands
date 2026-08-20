@@ -2,13 +2,13 @@
   "apiVersion": "hands/v1",
   "kind": "Capability",
   "metadata": {
-    "id": "a1e1c7c2-6f3a-4d8e-9b11-0c4d2e8f9012",
-    "name": "lookup_member_savings_balance",
-    "title": "Look up member savings balance",
-    "description": "Sign on to Heritage Core, open inquiry, and read the savings balance for a member identifier. Canonical across First Federal and Riverside skins. Reviewed from the live gpt-4o discovery run, then approved.",
+    "id": "c2b8e4a1-7d3f-4c9a-9e21-5f6a8b0c1d2e",
+    "name": "open_auxiliary_share",
+    "title": "Open an auxiliary share (product request)",
+    "description": "Sign on, open the new-product form, and submit a member identifier. Reaches confirmation on authorized members; permission denial is a business outcome, not a crash. Confirm/Post is irreversible and requires an approved artifact.",
     "version": "1.0.0",
-    "createdAt": "2026-08-19T19:45:41.201Z",
-    "sourceRunId": "run_0d9d0232-639c-4e30-ab02-74a69e99b7c5",
+    "createdAt": "2026-08-20T17:00:00.000Z",
+    "sourceRunId": "reviewed_open_product",
     "status": "approved",
     "vendorApp": {
       "id": "heritage-core",
@@ -18,7 +18,7 @@
       "mode": "canonical"
     },
     "surfaceKind": "web",
-    "tags": ["heritage-core", "inquiry", "canonical", "discovered"]
+    "tags": ["heritage-core", "open-product", "canonical", "irreversible"]
   },
   "spec": {
     "entry": {
@@ -40,7 +40,7 @@
         "required": true,
         "description": "Five-digit member/customer number",
         "pii": "identifier",
-        "example": "12345"
+        "example": "67890"
       },
       {
         "name": "port",
@@ -51,63 +51,10 @@
         "default": 3401
       }
     ],
-    "outputs": [
-      {
-        "name": "memberName",
-        "type": "string",
-        "description": "Name on the CIF record",
-        "pii": "identifier",
-        "extractor": {
-          "parse": "text",
-          "from": {
-            "description": "Name cell on the CIF table",
-            "locators": [
-              {
-                "strategy": "structural_path",
-                "path": "tr:has-text(\"Member Name\") >> td >> nth=1",
-                "frame": ["main"],
-                "confidence": 0.8
-              },
-              {
-                "strategy": "structural_path",
-                "path": "tr:has-text(\"Customer Name\") >> td >> nth=1",
-                "frame": ["main"],
-                "confidence": 0.8
-              }
-            ]
-          }
-        }
-      },
-      {
-        "name": "savingsBalance",
-        "type": "number",
-        "description": "Current savings / share balance",
-        "pii": "none",
-        "extractor": {
-          "parse": "currency",
-          "from": {
-            "description": "Balance cell on the CIF table",
-            "locators": [
-              {
-                "strategy": "structural_path",
-                "path": "tr:has-text(\"Share Balance\") >> td >> nth=1",
-                "frame": ["main"],
-                "confidence": 0.8
-              },
-              {
-                "strategy": "structural_path",
-                "path": "tr:has-text(\"Current Savings\") >> td >> nth=1",
-                "frame": ["main"],
-                "confidence": 0.8
-              }
-            ]
-          }
-        }
-      }
-    ],
+    "outputs": [],
     "success": {
       "type": "checkpoint",
-      "checkpointId": "on_member_detail"
+      "checkpointId": "on_open_form"
     },
     "steps": [
       {
@@ -174,17 +121,23 @@
         "action": "click",
         "risk": "safe",
         "target": {
-          "description": "Inquiry menu",
+          "description": "Open product menu",
           "locators": [
             {
               "strategy": "ax_role_name",
               "role": "link",
-              "name": "Member Inquiry",
-              "namePattern": "Member Inquiry|Customer Inquiry",
+              "name": "Open Auxiliary Share",
+              "namePattern": "Open Auxiliary Share|Open Sub-Account",
               "frame": ["header"],
               "confidence": 0.9
             }
           ]
+        },
+        "checkpoint": {
+          "id": "on_open_form",
+          "kind": "text_includes",
+          "value": "New product request",
+          "frame": ["main"]
         }
       },
       {
@@ -209,24 +162,18 @@
       {
         "id": "s7",
         "action": "click",
-        "risk": "safe",
+        "risk": "irreversible",
         "target": {
-          "description": "Search",
+          "description": "Submit product request",
           "locators": [
             {
               "strategy": "ax_role_name",
               "role": "button",
-              "name": "Search",
+              "name": "Submit",
               "frame": ["main"],
               "confidence": 0.95
             }
           ]
-        },
-        "checkpoint": {
-          "id": "on_member_detail",
-          "kind": "text_includes",
-          "value": "CIF record",
-          "frame": ["main"]
         }
       }
     ],
