@@ -1,0 +1,17 @@
+{"at":"2026-08-20T17:56:30.761Z","kind":"replay_start","payload":{"capability":"open_auxiliary_share","params":{"tenant":"first-federal","memberId":"67890","port":3401}}}
+{"at":"2026-08-20T17:56:30.792Z","kind":"observe","payload":{"stepId":"s1","url":"about:blank","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:30.990Z","kind":"observe","payload":{"stepId":"s1","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:56:30.999Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:31.198Z","kind":"observe","payload":{"stepId":"s2","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:56:31.204Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:31.401Z","kind":"observe","payload":{"stepId":"s3","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:56:31.406Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/login","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:33.253Z","kind":"observe","payload":{"stepId":"s4","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":["unexpected_dialog"],"phase":"after"}}
+{"at":"2026-08-20T17:56:33.253Z","kind":"handler","payload":{"stepId":"s4","handlerId":"h_notice","match":"unexpected_dialog","phase":"after"}}
+{"at":"2026-08-20T17:56:35.067Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:36.878Z","kind":"observe","payload":{"stepId":"s5","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:56:40.121Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:41.902Z","kind":"observe","payload":{"stepId":"s6","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"after"}}
+{"at":"2026-08-20T17:56:43.524Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":[],"phase":"before"}}
+{"at":"2026-08-20T17:56:45.318Z","kind":"observe","payload":{"stepId":"s7","url":"http://127.0.0.1:3401/t/first-federal/app","signatures":["permission_denied"],"phase":"after"}}
+{"at":"2026-08-20T17:56:45.319Z","kind":"handler","payload":{"stepId":"s7","handlerId":"h_denied","match":"permission_denied","phase":"after"}}

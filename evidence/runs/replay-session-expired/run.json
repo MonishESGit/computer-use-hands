@@ -1,0 +1,11 @@
+{
+  "finishedAt": "2026-08-20T17:54:53.114Z",
+  "result": {
+    "status": "escalated",
+    "runId": "replay-session-expired",
+    "durationMs": 14436,
+    "interventionId": "int_replay-session-expired",
+    "reason": "Teller session expired; a human must re-authenticate on this live session.",
+    "evidenceDir": "evidence/runs/replay-session-expired"
+  }
+}

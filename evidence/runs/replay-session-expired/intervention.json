@@ -1,0 +1,7 @@
+{
+  "id": "int_d9416f34-ed17-4060-82be-3c2c45ea95f5",
+  "runId": "replay-session-expired",
+  "reason": "Teller session expired; a human must re-authenticate on this live session.",
+  "createdAt": "2026-08-20T17:54:53.108Z",
+  "capabilityName": "lookup_member_savings_balance"
+}

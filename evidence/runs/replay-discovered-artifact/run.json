@@ -1,10 +1,10 @@
 {
-  "finishedAt": "2026-08-20T17:54:25.597Z",
+  "finishedAt": "2026-08-20T17:55:27.558Z",
   "result": {
     "status": "success",
-    "runId": "replay-success",
-    "durationMs": 16408,
-    "stepsCompleted": 7,
+    "runId": "replay-discovered-artifact",
+    "durationMs": 19763,
+    "stepsCompleted": 8,
     "outputs": {
       "memberName": "Alicia Nguyen",
       "savingsBalance": 4250.18

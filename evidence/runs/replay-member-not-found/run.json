@@ -1,11 +1,11 @@
 {
-  "finishedAt": "2026-08-19T19:41:40.663Z",
+  "finishedAt": "2026-08-20T17:54:38.552Z",
   "result": {
     "status": "business_outcome",
-    "runId": "run_8c2d5999-bb89-445c-afc6-388981dd71c4",
-    "durationMs": 12974,
+    "runId": "replay-member-not-found",
+    "durationMs": 12815,
     "code": "MEMBER_NOT_FOUND",
     "message": "No CIF record for this identifier",
-    "evidenceDir": "evidence/runs/run_8c2d5999-bb89-445c-afc6-388981dd71c4"
+    "evidenceDir": "evidence/runs/replay-member-not-found"
   }
 }

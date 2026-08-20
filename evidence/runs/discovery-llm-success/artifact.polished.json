@@ -1,0 +1,339 @@
+{
+  "apiVersion": "hands/v1",
+  "kind": "Capability",
+  "metadata": {
+    "id": "ebacfc5d-b2ac-4b0d-8abb-6b138e7d97df",
+    "name": "lookup_member_savings_balance",
+    "title": "Look up member savings balance",
+    "description": "Log in as the teller and look up member 12345. Read the current savings balance.",
+    "version": "1.0.0",
+    "createdAt": "2026-08-19T19:45:41.201Z",
+    "sourceRunId": "run_0d9d0232-639c-4e30-ab02-74a69e99b7c5",
+    "status": "draft",
+    "vendorApp": {
+      "id": "heritage-core",
+      "version": "1.0.0"
+    },
+    "tenant": {
+      "mode": "canonical"
+    },
+    "surfaceKind": "web",
+    "tags": [
+      "heritage-core",
+      "inquiry",
+      "discovered"
+    ]
+  },
+  "spec": {
+    "entry": {
+      "urlTemplate": "http://127.0.0.1:{{port}}/t/{{tenant}}/login",
+      "surface": "web"
+    },
+    "parameters": [
+      {
+        "name": "tenant",
+        "type": "enum",
+        "required": true,
+        "description": "Institution path prefix",
+        "pii": "none",
+        "enumValues": [
+          "first-federal",
+          "riverside"
+        ]
+      },
+      {
+        "name": "memberId",
+        "type": "string",
+        "required": true,
+        "description": "Five-digit member/customer number",
+        "pii": "identifier"
+      },
+      {
+        "name": "port",
+        "type": "number",
+        "required": false,
+        "description": "Heritage Core port",
+        "pii": "none",
+        "default": 3401
+      }
+    ],
+    "outputs": [
+      {
+        "name": "memberName",
+        "type": "string",
+        "description": "Name on the CIF record",
+        "pii": "identifier",
+        "extractor": {
+          "from": {
+            "description": "Name cell",
+            "locators": [
+              {
+                "strategy": "structural_path",
+                "path": "tr:has-text(\"Member Name\") >> td >> nth=1",
+                "frame": [
+                  "main"
+                ],
+                "confidence": 0.8
+              },
+              {
+                "strategy": "structural_path",
+                "path": "tr:has-text(\"Customer Name\") >> td >> nth=1",
+                "frame": [
+                  "main"
+                ],
+                "confidence": 0.8
+              }
+            ]
+          },
+          "parse": "text"
+        }
+      },
+      {
+        "name": "savingsBalance",
+        "type": "number",
+        "description": "Savings balance",
+        "pii": "none",
+        "extractor": {
+          "from": {
+            "description": "Balance cell",
+            "locators": [
+              {
+                "strategy": "structural_path",
+                "path": "tr:has-text(\"Share Balance\") >> td >> nth=1",
+                "frame": [
+                  "main"
+                ],
+                "confidence": 0.8
+              },
+              {
+                "strategy": "structural_path",
+                "path": "tr:has-text(\"Current Savings\") >> td >> nth=1",
+                "frame": [
+                  "main"
+                ],
+                "confidence": 0.8
+              }
+            ]
+          },
+          "parse": "currency"
+        }
+      }
+    ],
+    "success": {
+      "type": "checkpoint",
+      "checkpointId": "on_member_detail"
+    },
+    "steps": [
+      {
+        "id": "s1",
+        "action": "navigate",
+        "risk": "safe",
+        "valueFrom": {
+          "kind": "literal",
+          "value": "http://127.0.0.1:{{port}}/t/{{tenant}}/login"
+        }
+      },
+      {
+        "id": "s2",
+        "action": "fill",
+        "risk": "safe",
+        "target": {
+          "description": "User ID",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "textbox",
+              "name": "User ID",
+              "confidence": 0.95
+            }
+          ]
+        },
+        "valueFrom": {
+          "kind": "secret",
+          "ref": "teller_user"
+        }
+      },
+      {
+        "id": "s3",
+        "action": "fill",
+        "risk": "safe",
+        "target": {
+          "description": "Password",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "textbox",
+              "name": "Password",
+              "confidence": 0.95
+            }
+          ]
+        },
+        "valueFrom": {
+          "kind": "secret",
+          "ref": "teller_password"
+        }
+      },
+      {
+        "id": "s4",
+        "action": "click",
+        "risk": "safe",
+        "target": {
+          "description": "Sign On",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "button",
+              "name": "Sign On",
+              "confidence": 0.95
+            }
+          ]
+        }
+      },
+      {
+        "id": "s5",
+        "action": "dismiss_dialog",
+        "risk": "safe"
+      },
+      {
+        "id": "s6",
+        "action": "click",
+        "risk": "safe",
+        "target": {
+          "description": "Member Inquiry",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "link",
+              "name": "Member Inquiry",
+              "namePattern": "Member Inquiry|Customer Inquiry",
+              "frame": [
+                "header"
+              ],
+              "confidence": 0.95
+            },
+            {
+              "strategy": "visible_text",
+              "text": "Member Inquiry",
+              "frame": [
+                "header"
+              ],
+              "confidence": 0.55
+            }
+          ]
+        }
+      },
+      {
+        "id": "s7",
+        "action": "fill",
+        "risk": "safe",
+        "target": {
+          "description": "Member Number",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "textbox",
+              "name": "Member Number",
+              "namePattern": "Member Number|Customer No\\.",
+              "frame": [
+                "main"
+              ],
+              "confidence": 0.95
+            }
+          ]
+        },
+        "valueFrom": {
+          "kind": "parameter",
+          "name": "memberId"
+        }
+      },
+      {
+        "id": "s8",
+        "action": "click",
+        "risk": "safe",
+        "target": {
+          "description": "Search",
+          "locators": [
+            {
+              "strategy": "ax_role_name",
+              "role": "button",
+              "name": "Search",
+              "frame": [
+                "main"
+              ],
+              "confidence": 0.95
+            }
+          ]
+        },
+        "checkpoint": {
+          "id": "on_member_detail",
+          "kind": "text_includes",
+          "value": "CIF record",
+          "frame": [
+            "main"
+          ]
+        }
+      }
+    ],
+    "exceptionHandlers": [
+      {
+        "id": "h_notice",
+        "when": {
+          "match": "unexpected_dialog"
+        },
+        "then": {
+          "kind": "recover",
+          "steps": [
+            {
+              "id": "r_ok",
+              "action": "dismiss_dialog",
+              "risk": "safe"
+            }
+          ]
+        }
+      },
+      {
+        "id": "h_not_found",
+        "when": {
+          "match": "not_found"
+        },
+        "then": {
+          "kind": "business_outcome",
+          "code": "MEMBER_NOT_FOUND",
+          "message": "No CIF record for this identifier"
+        }
+      },
+      {
+        "id": "h_validation",
+        "when": {
+          "match": "validation_error"
+        },
+        "then": {
+          "kind": "business_outcome",
+          "code": "VALIDATION_ERROR",
+          "message": "Identifier failed core validation"
+        }
+      },
+      {
+        "id": "h_denied",
+        "when": {
+          "match": "permission_denied"
+        },
+        "then": {
+          "kind": "business_outcome",
+          "code": "PERMISSION_DENIED",
+          "message": "Teller is not authorized for this product action"
+        }
+      },
+      {
+        "id": "h_expired",
+        "when": {
+          "match": "session_expired"
+        },
+        "then": {
+          "kind": "fail",
+          "code": "SESSION_EXPIRED"
+        }
+      }
+    ]
+  }
+}
