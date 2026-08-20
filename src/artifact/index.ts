@@ -14,3 +14,4 @@ export {
 export { parseCapability, parseCapabilityJson, loadCapabilityFile, serializeCapability, writeCapabilityFile } from "./io.js";
 export { interpolate, resolveParameters, resolveValueFrom, ParameterError } from "./parameters.js";
 export { namePatternFor, canonicalizeLocatorName, matchesAccessibleName } from "./canonicalize.js";
+export { polishCapability, compactDuplicateSteps } from "./polish.js";

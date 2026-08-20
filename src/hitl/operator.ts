@@ -43,13 +43,14 @@ export async function startOperator(options: {
         return;
       }
       if (req.method === "GET" && url.pathname === "/state") {
+        const live = await options.session.driver.observe().catch(() => options.observation);
         json(res, {
           intervention: options.intervention,
           owner: options.session.control.owner,
           observation: {
-            url: options.observation.url,
-            signatures: options.observation.signatures,
-            text: options.observation.combinedText.slice(0, 2000),
+            url: live.url,
+            signatures: live.signatures,
+            text: live.combinedText.slice(0, 2000),
           },
           humanLog: options.session.humanLog,
         });
@@ -71,21 +72,30 @@ export async function startOperator(options: {
       if (req.method === "POST" && url.pathname === "/inject") {
         options.session.pauseForHuman();
         const body = await readJson(req);
+        const type = (body.type as "click" | "fill" | "dismiss_dialog") ?? "click";
         await options.session.driver.act({
-          type: (body.type as "click" | "fill" | "dismiss_dialog") ?? "click",
+          type,
           value: body.value,
-          target: {
-            description: body.name ?? "injected",
-            locators: [
-              {
-                strategy: "ax_role_name",
-                role: body.role ?? "button",
-                name: body.name ?? "OK",
-                frame: body.frame ? [body.frame] : undefined,
-                confidence: 0.9,
-              },
-            ],
-          },
+          target:
+            type === "dismiss_dialog"
+              ? undefined
+              : {
+                  description: body.name ?? "injected",
+                  locators: [
+                    {
+                      strategy: "ax_role_name",
+                      role: body.role ?? "button",
+                      name: body.name ?? "OK",
+                      frame: body.frame ? [body.frame] : undefined,
+                      confidence: 0.9,
+                    },
+                  ],
+                },
+        });
+        options.session.humanLog.push({
+          at: new Date().toISOString(),
+          type: type === "fill" ? "fill" : type === "dismiss_dialog" ? "click" : "click",
+          detail: body.name ? `${type} ${body.name}` : type,
         });
         json(res, { ok: true, humanLog: options.session.humanLog });
         return;

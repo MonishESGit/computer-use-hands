@@ -20,6 +20,7 @@ export interface DiscoverOptions {
   secrets: Record<string, string>;
   maxSteps?: number;
   timeoutMs?: number;
+  onStuck?: (reason: string) => Promise<void>;
 }
 
 export interface DiscoverResult {
@@ -88,7 +89,11 @@ export async function discover(options: DiscoverOptions): Promise<DiscoverResult
     }
     if (decision.status === "stuck" || decision.status === "failed") {
       options.session.pauseForHuman();
-      return { status: "stuck", reason: decision.stuckReason ?? decision.status };
+      const reason = decision.stuckReason ?? decision.status;
+      if (options.onStuck) {
+        await options.onStuck(reason);
+      }
+      return { status: "stuck", reason };
     }
     if (!decision.action) {
       return { status: "failed", reason: "continue without action" };

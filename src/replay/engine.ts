@@ -10,7 +10,9 @@ import {
 import type { RunLog } from "../evidence/run.js";
 import type { LiveSession } from "../session/live.js";
 import { LocatorError, type ActionIntent } from "../surface/types.js";
+import type { LlmClient } from "../agent/llm.js";
 import { checkpointHolds, parseExtracted } from "./extract.js";
+import { repairStepTarget } from "./assist.js";
 
 export interface ReplayOptions {
   capability: Capability;
@@ -21,6 +23,8 @@ export interface ReplayOptions {
   session: LiveSession;
   evidence: RunLog;
   onEscalate?: (reason: string) => Promise<"resume" | "abort" | "complete">;
+  /** Off by default. One policy-checked locator repair, then replay continues. */
+  assist?: LlmClient;
 }
 
 export async function replay(options: ReplayOptions): Promise<RunResult> {
@@ -58,6 +62,7 @@ export async function replay(options: ReplayOptions): Promise<RunResult> {
   evidence.event("replay_start", { capability: capability.metadata.name, params: { ...params } });
   const recovered = new Set<string>();
   const steps = capability.spec.steps;
+  let assistUsed = false;
 
   for (let i = 0; i < steps.length; ) {
     const step = steps[i];
@@ -100,11 +105,39 @@ export async function replay(options: ReplayOptions): Promise<RunResult> {
     try {
       await executeStep(step, params, options.secrets, session);
     } catch (err) {
-      await captureFailure(session, evidence, step.id);
-      if (err instanceof LocatorError) {
+      await captureShot(session, evidence, `${step.id}.png`);
+      if (err instanceof LocatorError && options.assist && !assistUsed) {
+        assistUsed = true;
+        const obs = await session.driver.observe();
+        const repaired = await repairStepTarget({
+          llm: options.assist,
+          step,
+          observation: obs,
+          policy,
+        });
+        evidence.event("assist", {
+          stepId: step.id,
+          repaired: Boolean(repaired),
+          description: repaired?.target?.description,
+        });
+        if (repaired) {
+          try {
+            await executeStep(repaired, params, options.secrets, session);
+          } catch (retryErr) {
+            await captureShot(session, evidence, `${step.id}-assist.png`);
+            if (retryErr instanceof LocatorError) {
+              return fail(step.id, step.target?.description ?? step.action, retryErr.message);
+            }
+            return fail(step.id, step.action, retryErr instanceof Error ? retryErr.message : String(retryErr));
+          }
+        } else {
+          return fail(step.id, step.target?.description ?? step.action, err.message);
+        }
+      } else if (err instanceof LocatorError) {
         return fail(step.id, step.target?.description ?? step.action, err.message);
+      } else {
+        return fail(step.id, step.action, err instanceof Error ? err.message : String(err));
       }
-      return fail(step.id, step.action, err instanceof Error ? err.message : String(err));
     }
 
     const afterHandlers = await applyPageHandlers(
@@ -128,7 +161,7 @@ export async function replay(options: ReplayOptions): Promise<RunResult> {
     if (step.checkpoint) {
       const after = await session.driver.observe();
       if (!checkpointHolds(after, step.checkpoint)) {
-        await captureFailure(session, evidence, step.id);
+        await captureShot(session, evidence, `${step.id}.png`);
         return fail(step.id, `checkpoint ${step.checkpoint.id}: ${step.checkpoint.value}`, after.combinedText.slice(0, 400));
       }
     }
@@ -145,7 +178,7 @@ export async function replay(options: ReplayOptions): Promise<RunResult> {
       });
       outputs[output.name] = parseExtracted(extracted.extractedText ?? "", output.extractor.parse);
     } catch (err) {
-      await captureFailure(session, evidence, "extract");
+      await captureShot(session, evidence, "extract.png");
       return fail("extract", output.name, err instanceof Error ? err.message : String(err));
     }
   }
@@ -156,7 +189,7 @@ export async function replay(options: ReplayOptions): Promise<RunResult> {
   if (successCp) {
     const obs = await session.driver.observe();
     if (!checkpointHolds(obs, successCp)) {
-      await captureFailure(session, evidence, "success");
+      await captureShot(session, evidence, "success.png");
       return fail("success", successCp.value, obs.combinedText.slice(0, 400));
     }
   }
@@ -193,7 +226,7 @@ async function applyPageHandlers(
   });
   const urlCheck = originAllowed(options.policy, obs.url);
   if (!urlCheck.ok && obs.url && obs.url !== "about:blank") {
-    await captureFailure(session, evidence, step.id);
+    await captureShot(session, evidence, `${step.id}.png`);
     return {
       kind: "return",
       result: fail(step.id, "allowlisted origin", urlCheck.reason, "policy_violation"),
@@ -222,6 +255,7 @@ async function applyHandler(
   const { evidence, session } = options;
   switch (then.kind) {
     case "business_outcome": {
+      await captureShot(session, evidence, `outcome-${then.code}.png`);
       const result: RunResult = {
         status: "business_outcome",
         runId: evidence.runId,
@@ -234,11 +268,13 @@ async function applyHandler(
       return { kind: "return", result };
     }
     case "fail":
+      await captureShot(session, evidence, `${step.id}.png`);
       return {
         kind: "return",
         result: fail(step.id, then.code, handler.when.match),
       };
     case "escalate": {
+      await captureShot(session, evidence, "escalated.png");
       if (options.onEscalate) {
         session.pauseForHuman();
         const decision = await options.onEscalate(then.reason);
@@ -330,11 +366,11 @@ async function executeStep(
   await session.driver.act(intent);
 }
 
-async function captureFailure(session: LiveSession, evidence: RunLog, stepId: string): Promise<void> {
+async function captureShot(session: LiveSession, evidence: RunLog, name: string): Promise<void> {
   try {
     const shot = await session.driver.screenshot();
-    evidence.screenshot(`${stepId}.png`, shot);
+    evidence.screenshot(name, shot);
   } catch {
-    evidence.event("screenshot_failed", { stepId });
+    evidence.event("screenshot_failed", { name });
   }
 }

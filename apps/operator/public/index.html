@@ -24,6 +24,7 @@
       <p class="reason" id="reason">Loading…</p>
       <p id="owner"></p>
       <button id="resume">Resume automation</button>
+      <button id="complete">Mark complete</button>
       <button id="abort">Abort</button>
       <h3>Human actions</h3>
       <pre id="log"></pre>
@@ -53,6 +54,7 @@
     }
     document.getElementById("resume").onclick = () => resume("resume");
     document.getElementById("abort").onclick = () => resume("abort");
+    document.getElementById("complete").onclick = () => resume("complete");
     refresh();
     setInterval(refresh, 2000);
   </script>
